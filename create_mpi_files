@@ -1,0 +1,39 @@
+#!/bin/bash
+
+if [ $# -lt 2 ]; then
+    echo "
+Usage: create_mpi_files <processors> <name>
+
+This script creates <processors> mpi files named after the feap input file <name>. 
+Filenames and extensions must be of equal length for FE^2, so leading zeros are 
+prepended to match the number of digits in <processors>.
+
+Example:
+         create_mpi_files 128 test     # creates 128 files test.001, test.002 ...
+"
+fi
+
+# get number of digits in processors
+digits=$(expr length "$1");
+
+# preformat string for printf
+# %0Nd means leading zeros such that there are N digits,
+# d for integers, %s gets replaced by the next variable in printf
+leading_zero_string="%0"$digits"d%s";
+
+# loop parameter
+k=1;
+
+# prefill first file with mpi directive
+echo "nocount
+ufeap * * Test on file input for fine scale.
+
+include solve_mpi
+
+stop" > $2.`printf $leading_zero_string $k`;
+
+# copy and rename files accordingly
+while [ $k -lt $1 ]; do
+    cp $2.`printf $leading_zero_string $k` $2.`printf $leading_zero_string $[$k+1]`
+    let k=k+1
+done
