@@ -5,7 +5,7 @@ pos_int_regex='[0-9]+'
 lc_char_regex='[a-z]+'
 
 
-if [[ ($# -ne 2) || ($1 =~ $pos_int_regex) || ($2 =~ $lc_char_regex) ]]
+if [[ ($# -ne 2) || !($1 =~ $pos_int_regex) || !($2 =~ $lc_char_regex) ]]
 then
     echo "
 Usage: create_mpi_files <processors> <name>
